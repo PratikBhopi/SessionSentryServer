@@ -5,7 +5,7 @@ This API provides endpoints for storing and retrieving event data from a MongoDB
 ## Base URL
 
 ```
-http://localhost:3000
+https://sessionsentryserver.onrender.com
 ```
 
 ## API Endpoints
