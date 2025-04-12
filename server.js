@@ -61,10 +61,21 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
-// Get events by user
-app.get('/api/events/user/:computername', async (req, res) => {
+// Get all users
+app.get('/api/users', async (req, res) => {
     try {
-        const events = await db.getEventsByComputer(req.params.computername);
+        const users = await db.getAllUsers();
+        res.json(users);
+    } catch (error) {
+        console.error('Error getting users:', error);
+        res.status(500).json({ error: 'Failed to get users' });
+    }
+});
+
+// Get events by user
+app.get('/api/events/user/:username', async (req, res) => {
+    try {
+        const events = await db.getEventsByUser(req.params.username);
         res.json(events);
     } catch (error) {
         console.error('Error getting user events:', error);
@@ -109,6 +120,37 @@ app.get('/api/events/time-range', async (req, res) => {
     }
 });
 
+// Get user information
+app.get('/api/users/:computerName', async (req, res) => {
+    try {
+        const user = await db.getUserInfo(req.params.computerName);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error('Error getting user information:', error);
+        res.status(500).json({ error: 'Failed to get user information' });
+    }
+});
+
+// Update user status
+app.put('/api/users/:computerName/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!['active', 'suspended', 'blocked'].includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+        const user = await db.updateUserStatus(req.params.computerName, status);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating user status:', error);
+        res.status(500).json({ error: 'Failed to update user status' });
+    }
+});
 
 app.post('/api/send-email', async (req, res) => {
     const { to, subject, text } = req.body;
@@ -120,7 +162,6 @@ app.post('/api/send-email', async (req, res) => {
         res.status(500).json({ error: 'Failed to send email' });
     }
 });
-
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

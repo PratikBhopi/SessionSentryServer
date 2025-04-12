@@ -1,214 +1,323 @@
 # Event Monitoring System API Documentation
 
-This API provides endpoints for storing and retrieving event data from a MongoDB database. The system tracks various types of events with detailed information about users, computers, IP addresses, and event statuses.
+This API provides endpoints for monitoring and managing computer/user events and activities.
 
 ## Base URL
-
 ```
-https://sessionsentryserver.onrender.com
+http://localhost:3000
 ```
 
-## API Endpoints
+## Endpoints
 
-### 1. Store Events
-Store new events in the database.
+### Events
 
-**Endpoint:** `POST /api/events`
+#### 1. Store Events
+```http
+POST /api/events
+```
+Store new events in the system.
+
+**Request Body:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+**Response:**
+```json
+{
+    "message": "Events stored successfully"
+}
+```
+
+#### 2. Get All Events
+```http
+GET /api/events
+```
+Retrieve all events from the system.
+
+**Response:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+#### 3. Get Events by User
+```http
+GET /api/events/user/:username
+```
+Retrieve all events for a specific user.
+
+**Response:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+#### 4. Get Events by IP
+```http
+GET /api/events/ip/:ip
+```
+Retrieve all events from a specific IP address.
+
+**Response:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+#### 5. Get Events by Type
+```http
+GET /api/events/type/:type
+```
+Retrieve all events of a specific type.
+
+**Response:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+#### 6. Get Events by Time Range
+```http
+GET /api/events/time-range?startTime=2024-03-20T00:00:00.000Z&endTime=2024-03-20T23:59:59.999Z
+```
+Retrieve events within a specific time range.
+
+**Query Parameters:**
+- `startTime`: Start of the time range (ISO format)
+- `endTime`: End of the time range (ISO format)
+
+**Response:**
+```json
+[
+    {
+        "event_id": "123",
+        "time": "2024-03-20T14:30:00.000Z",
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "event_type": "login_attempt",
+        "ip_address": "192.168.1.100",
+        "status": "success"
+    }
+]
+```
+
+### Users
+
+#### 1. Get All Users
+```http
+GET /api/users
+```
+Retrieve all users/computers from the system.
+
+**Response:**
+```json
+[
+    {
+        "computer_name": "PC-001",
+        "user_name": "john_doe",
+        "ip_address": "192.168.1.100",
+        "first_seen": "2024-03-20T10:00:00.000Z",
+        "last_seen": "2024-03-20T14:30:00.000Z",
+        "total_events": 5,
+        "failed_attempts": 1,
+        "status": "active"
+    }
+]
+```
+
+#### 2. Get User Information
+```http
+GET /api/users/:computerName
+```
+Retrieve detailed information about a specific computer/user.
+
+**Response:**
+```json
+{
+    "computer_name": "PC-001",
+    "user_name": "john_doe",
+    "ip_address": "192.168.1.100",
+    "first_seen": "2024-03-20T10:00:00.000Z",
+    "last_seen": "2024-03-20T14:30:00.000Z",
+    "total_events": 5,
+    "failed_attempts": 1,
+    "status": "active"
+}
+```
+
+#### 3. Update User Status
+```http
+PUT /api/users/:computerName/status
+```
+Update the status of a specific computer/user.
 
 **Request Body:**
 ```json
 {
-  "events": [
-    {
-      "event_id": 12345,
-      "time": "2024-04-12T10:30:00",
-      "computer_name": "DESKTOP-ABC123",
-      "user_name": "john.doe",
-      "event_type": "login",
-      "ip_address": "192.168.1.100",
-      "status": "success"
-    }
-  ]
+    "status": "suspended"
+}
+```
+
+**Valid Status Values:**
+- `active`: Normal operation
+- `suspended`: Temporarily restricted
+- `blocked`: Permanently restricted
+
+**Response:**
+```json
+{
+    "computer_name": "PC-001",
+    "user_name": "john_doe",
+    "ip_address": "192.168.1.100",
+    "first_seen": "2024-03-20T10:00:00.000Z",
+    "last_seen": "2024-03-20T14:30:00.000Z",
+    "total_events": 5,
+    "failed_attempts": 1,
+    "status": "suspended"
+}
+```
+
+### Email Notifications
+
+#### Send Email
+```http
+POST /api/send-email
+```
+Send an email notification.
+
+**Request Body:**
+```json
+{
+    "to": "recipient@example.com",
+    "subject": "Test Email",
+    "text": "This is a test email"
 }
 ```
 
 **Response:**
 ```json
 {
-  "message": "Events stored successfully",
-  "count": 1
+    "message": "Email sent successfully"
 }
-```
-
-### 2. Get All Events
-Retrieve all events from the database.
-
-**Endpoint:** `GET /api/events`
-
-**Response:**
-```json
-[
-  {
-    "event_id": 12345,
-    "time": "2024-04-12T10:30:00",
-    "computer_name": "DESKTOP-ABC123",
-    "user_name": "john.doe",
-    "event_type": "login",
-    "ip_address": "192.168.1.100",
-    "status": "success",
-    "timestamp": "2024-04-12T10:30:00.000Z"
-  }
-]
-```
-
-### 3. Get Events by User
-Retrieve all events associated with a specific user.
-
-**Endpoint:** `GET /api/events/user/:username`
-
-**Example:** `GET /api/events/user/john.doe`
-
-**Response:**
-```json
-[
-  {
-    "event_id": 12345,
-    "time": "2024-04-12T10:30:00",
-    "computer_name": "DESKTOP-ABC123",
-    "user_name": "john.doe",
-    "event_type": "login",
-    "ip_address": "192.168.1.100",
-    "status": "success",
-    "timestamp": "2024-04-12T10:30:00.000Z"
-  }
-]
-```
-
-### 4. Get Events by IP
-Retrieve all events associated with a specific IP address.
-
-**Endpoint:** `GET /api/events/ip/:ip`
-
-**Example:** `GET /api/events/ip/192.168.1.100`
-
-**Response:**
-```json
-[
-  {
-    "event_id": 12345,
-    "time": "2024-04-12T10:30:00",
-    "computer_name": "DESKTOP-ABC123",
-    "user_name": "john.doe",
-    "event_type": "login",
-    "ip_address": "192.168.1.100",
-    "status": "success",
-    "timestamp": "2024-04-12T10:30:00.000Z"
-  }
-]
-```
-
-### 5. Get Events by Type
-Retrieve all events of a specific type.
-
-**Endpoint:** `GET /api/events/type/:type`
-
-**Example:** `GET /api/events/type/login`
-
-**Response:**
-```json
-[
-  {
-    "event_id": 12345,
-    "time": "2024-04-12T10:30:00",
-    "computer_name": "DESKTOP-ABC123",
-    "user_name": "john.doe",
-    "event_type": "login",
-    "ip_address": "192.168.1.100",
-    "status": "success",
-    "timestamp": "2024-04-12T10:30:00.000Z"
-  }
-]
-```
-
-### 6. Get Events by Time Range
-Retrieve all events within a specific time range.
-
-**Endpoint:** `GET /api/events/time-range`
-
-**Query Parameters:**
-- `start`: Start time (ISO format)
-- `end`: End time (ISO format)
-
-**Example:** `GET /api/events/time-range?start=2024-04-12T00:00:00&end=2024-04-12T23:59:59`
-
-**Response:**
-```json
-[
-  {
-    "event_id": 12345,
-    "time": "2024-04-12T10:30:00",
-    "computer_name": "DESKTOP-ABC123",
-    "user_name": "john.doe",
-    "event_type": "login",
-    "ip_address": "192.168.1.100",
-    "status": "success",
-    "timestamp": "2024-04-12T10:30:00.000Z"
-  }
-]
 ```
 
 ## Error Responses
 
-All endpoints may return the following error responses:
-
-**400 Bad Request:**
+### 400 Bad Request
 ```json
 {
-  "error": "Start and end times are required"
+    "error": "Invalid request parameters"
 }
 ```
 
-**500 Internal Server Error:**
+### 404 Not Found
 ```json
 {
-  "error": "Failed to [operation]"
+    "error": "User not found"
 }
 ```
 
-## Data Structure
-
-Each event object contains the following fields:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| event_id | Number | Unique identifier for the event |
-| time | String | Time of the event in ISO format |
-| computer_name | String | Name of the computer where the event occurred |
-| user_name | String | Username associated with the event |
-| event_type | String | Type of event (e.g., login, logout) |
-| ip_address | String | IP address associated with the event |
-| status | String | Status of the event (e.g., success, failure) |
-| timestamp | Date | Timestamp when the event was stored in the database |
+### 500 Internal Server Error
+```json
+{
+    "error": "Failed to process request"
+}
+```
 
 ## Setup Instructions
 
 1. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. Start MongoDB server
+2. Set up environment variables:
+```bash
+# MongoDB connection
+MONGODB_URI=mongodb://localhost:27017/event_monitoring
 
-3. Start the API server:
-   ```bash
-   node server.js
-   ```
+# Email configuration
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+```
 
-4. The server will run on `http://localhost:3000`
+3. Start the server:
+```bash
+node server.js
+```
 
-## Environment Variables
+## Data Structure
 
-The following environment variables can be configured:
+### Event Object
+```typescript
+{
+    event_id: string;
+    time: Date;
+    computer_name: string;
+    user_name: string;
+    event_type: string;
+    ip_address: string;
+    status: string;
+}
+```
 
-- `PORT`: Server port (default: 3000)
-- `MONGODB_URI`: MongoDB connection string (default: mongodb://localhost:27017/analytics_db) 
+### User Object
+```typescript
+{
+    computer_name: string;
+    user_name: string;
+    ip_address: string;
+    first_seen: Date;
+    last_seen: Date;
+    total_events: number;
+    failed_attempts: number;
+    status: 'active' | 'suspended' | 'blocked';
+}
+``` 
