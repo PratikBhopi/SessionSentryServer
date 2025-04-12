@@ -146,5 +146,6 @@ module.exports = {
     getEventsByUser,
     getEventsByIP,
     getEventsByType,
-    getEventsByTimeRange
+    getEventsByTimeRange,
+    getEventsByComputer
 }; 
