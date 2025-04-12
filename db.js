@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { CLIENT_LONG_PASSWORD } = require('mysql/lib/protocol/constants/client');
+// const { CLIENT_LONG_PASSWORD } = require('mysql/lib/protocol/constants/client');
 dotenv.config();
 // MongoDB connection string
 const MONGODB_URI = process.env.MONGO_URI;
