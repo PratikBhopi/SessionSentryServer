@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-
+const dotenv = require('dotenv');
+dotenv.config();
 // MongoDB connection string
-const MONGODB_URI = 'mongodb+srv://pkbhopi132:Mx0GUVE82PhwOEUr@ssdb.s9roemr.mongodb.net/analytics_db';
-
+const MONGODB_URI = process.env.MONGO_URI;
 // Connection options
 const options = {
     useNewUrlParser: true,
