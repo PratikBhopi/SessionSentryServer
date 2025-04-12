@@ -150,7 +150,7 @@ async function getAllEvents() {
 // Function to get events by user
 async function getEventsByUser(username) {
     try {
-        return await Event.find({ user_name: username }).sort({ time: -1 });
+        return await Event.find({ computer_name: username }).sort({ time: -1 });
     } catch (error) {
         console.error('Error getting events by user:', error);
         throw error;
