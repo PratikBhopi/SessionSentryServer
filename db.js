@@ -131,6 +131,15 @@ async function getEventsByTimeRange(startTime, endTime) {
     }
 }
 
+async function getEventsByComputer(computername) {
+    try {
+        return await Event.find({ computer_name: computername }).sort({ timestamp: -1 });
+    } catch (error) {
+        console.error('Error getting computer events:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     storeEvents,
     getAllEvents,

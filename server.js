@@ -62,9 +62,9 @@ app.get('/api/events', async (req, res) => {
 });
 
 // Get events by user
-app.get('/api/events/user/:username', async (req, res) => {
+app.get('/api/events/user/:computername', async (req, res) => {
     try {
-        const events = await db.getEventsByUser(req.params.username);
+        const events = await db.getEventsByComputer(req.params.computername);
         res.json(events);
     } catch (error) {
         console.error('Error getting user events:', error);
@@ -108,6 +108,19 @@ app.get('/api/events/time-range', async (req, res) => {
         res.status(500).json({ error: 'Failed to get events by time range' });
     }
 });
+
+
+app.post('/api/send-email', async (req, res) => {
+    const { to, subject, text } = req.body;
+    try {
+        // await sendEmail(to, subject, text);
+        res.json({ message: 'Email sent successfully' });
+    } catch (error) {       
+        console.error('Error sending email:', error);
+        res.status(500).json({ error: 'Failed to send email' });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
